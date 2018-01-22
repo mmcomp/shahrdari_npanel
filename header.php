@@ -25,6 +25,7 @@
     <!-- Main styles for this application -->
     <link href="dest/style.css" rel="stylesheet">
     <link href="css/jquery-ui.css" rel="stylesheet">
+    <link href="js/cal/skins/aqua/theme.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/bachi.png">
 	<style type="text/css">
 					.ui-dialog { z-index: 1000 !important ;}

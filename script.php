@@ -2,6 +2,10 @@
 
 ?>
 <script src="js/libs/jquery-ui.js"></script>
+<script src="js/cal/jalali.js"></script>
+<script src="js/cal/calendar.js"></script>
+<script src="js/cal/calendar-setup.js"></script>
+<script src="js/cal/lang/calendar-fa.js"></script>
 <script src="OpenLayers.js"></script>
 <script>
       var points = <?php echo json_encode($points); ?>;
@@ -100,7 +104,7 @@
         }
         
         var zoom = 11; 
-        layer = new OpenLayers.Layer.Vector("Path Layer", {eventListeners: layerListeners});
+        layer = new OpenLayers.Layer.Vector("Path Layer");//, {eventListeners: layerListeners});
         
         var format = new OpenLayers.Format.WKT();
         var mfeature,mfeatures=[];
@@ -211,8 +215,42 @@
       }
       $(document).ready(function(){
           init();
+					Calendar.setup({
+							inputField: 'aztarikh',
+							ifFormat: '%Y/%m/%d',
+							dateType: 'jalali'
+					});
+					Calendar.setup({
+							inputField: 'tatarikh',
+							ifFormat: '%Y/%m/%d',
+							dateType: 'jalali'
+					});
       });
-
+			function clearTarikh(){
+				if(confirm('آیا مطمئن هستید؟')){
+					$("#tarikh-form").append('<input type="hidden" name="aztarikh" value="" />');
+					$("#tarikh-form").append('<input type="hidden" name="tatarikh" value="" />');
+					$("#tarikh-form").submit();
+				}
+			}
+			function setTarikh(){
+				var aztarikh = $("#aztarikh").val();
+				var tatarikh = $("#tatarikh").val();
+				if(aztarikh=='' || tatarikh==''){
+					alert('باید هردو تاریخ انتخاب شود');
+				}else{
+					if(tatarikh>=aztarikh){
+						if($("#tarikh-form").length==1){
+							$("#tarikh-form").append('<input type="hidden" name="aztarikh" value="'+aztarikh+'" />');
+							$("#tarikh-form").append('<input type="hidden" name="tatarikh" value="'+tatarikh+'" />');
+							$("#tarikh-form").submit();
+						}
+					}else{
+						alert('لطفا توالی تاریخ حفظ شود');
+					}					
+				}
+			}
+	
       function loadTolid(){
         dialog.dialog('option', 'title', 'تولید');
         $("#repo").val('tolid');

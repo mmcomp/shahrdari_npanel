@@ -1,4 +1,5 @@
 <?php
+include_once('class/jdf.php');
 include_once('class/report.php');
 include_once('class/kml.php');
 include_once('class/csv.php');
@@ -13,6 +14,17 @@ if(isset($_SESSION['selected_base']) && $_SESSION['selected_base']!=''){
 	$selected_base = $_SESSION['selected_base'];
 }else{
 	$_SESSION['selected_base'] = $selected_base;
+}
+$aztarikh = '';//jdate("Y/m/d");
+$tatarikh = '';//jdate("Y/m/d");
+if(isset($_REQUEST['aztarikh'])){
+	$aztarikh = $_REQUEST['aztarikh'];
+	$tatarikh = $_REQUEST['tatarikh'];
+	$_SESSION['aztarikh'] = $aztarikh;
+	$_SESSION['tatarikh'] = $tatarikh;
+}else if(isset($_SESSION['aztarikh'])){
+	$aztarikh = $_SESSION['aztarikh'];
+	$tatarikh = $_SESSION['tatarikh'];
 }
 $points = array();
 $manategh = array();
@@ -300,26 +312,60 @@ if($dbok){
     $max = max($a);
     $new_min = 0;
     $new_max = 0.8;
+		$op_array=array(0.16,0.32,0.48,0.74,0.8);
+		
 		if($max>0){
 			foreach ($a as $i => $v) {
-				$a[$i] = ((($new_max - $new_min) * ($v - $min)) / ($max - $min)) + $new_min;
+// 				$a[$i] = ((($new_max - $new_min) * ($v - $min)) / ($max - $min)) + $new_min;
+				$tmp = (int)$v-$min;
+				$tmp = (int)(5*$tmp / ($max-$min));
+				$opc = $op_array[$tmp];
+				$a[$i] = $opc;
 			}
 		}
+		
+		
     $vals = $a;
     for($i=0;$i<count($vals);$i++){
       if(isset($manategh[$i])){
         $manategh[$i]['rval'] = $vals[$i];
       }
     }
-		
+		/*
     foreach($realvals as $i=>$val){
       $legend .= '<div id="man_'.$val['id'].'" class="man" onclick="selPol('.$val['id'].');" >';
-      $legend .= '<span style="background:#ac1919;opacity:'.$vals[$i].';">&nbsp;&nbsp;</span>&nbsp;';
+//       $legend .= '<span style="background:#ac1919;opacity:'.$vals[$i].';">&nbsp;&nbsp;</span>&nbsp;';
+			$opc = 0;
+			if($max>0){
+				$tmp = (int)$val['val']-$min;
+				$tmp = (int)(5*$tmp / ($max-$min));
+				$opc = $op_array[$tmp];
+			}
+      $legend .= '<span style="background:#ac1919;opacity:'.$opc.';">&nbsp;&nbsp;</span>&nbsp;';
       $legend .= 'Zone '.$val['id'].' = '.$val['val'].'';
       $legend .= '</div>';
     }
-		
-		
+		*/
+		$legend .= '<div>';
+		$legend .= '<span style="background:#ac1919;opacity:'.$op_array[0].';">&nbsp;&nbsp;</span>&nbsp;';
+		$legend .= '0-'.((int)(0.2*$max));
+    $legend .= '</div>';
+		$legend .= '<div>';
+		$legend .= '<span style="background:#ac1919;opacity:'.$op_array[1].';">&nbsp;&nbsp;</span>&nbsp;';
+		$legend .= ((int)(0.2*$max)).'-'.((int)(0.4*$max));
+    $legend .= '</div>';
+		$legend .= '<div>';
+		$legend .= '<span style="background:#ac1919;opacity:'.$op_array[2].';">&nbsp;&nbsp;</span>&nbsp;';
+		$legend .= ((int)(0.4*$max)).'-'.((int)(0.6*$max));
+    $legend .= '</div>';
+		$legend .= '<div>';
+		$legend .= '<span style="background:#ac1919;opacity:'.$op_array[3].';">&nbsp;&nbsp;</span>&nbsp;';
+		$legend .= ((int)(0.6*$max)).'-'.((int)(0.8*$max));
+    $legend .= '</div>';
+		$legend .= '<div>';
+		$legend .= '<span style="background:#ac1919;opacity:'.$op_array[4].';">&nbsp;&nbsp;</span>&nbsp;';
+		$legend .= ((int)(0.8*$max)).'-'.($max);
+    $legend .= '</div>';
   }
 
 }
@@ -336,9 +382,16 @@ $_SESSION['csv_ready'] = $csv_ready;
 							<img src="img/excel.png" style="height: 20px;"/>
             </li>	
 						<?php }?>
-						<!--
-            <li class="breadcrumb-item active"></li>
-						-->
+						
+            <li class="breadcrumb-item active">
+							<label for="aztarikh">از تاریخ</label>
+							<input id="aztarikh" name="aztarikh" value="<?php echo $aztarikh; ?>"  autocomplete="off" readonly="true" />
+							<label for="tatarikh">تا تاریخ</label>
+							<input id="tatarikh" name="tatarikh" value="<?php echo $tatarikh; ?>"  autocomplete="off" readonly="true" />
+							<a class="btn btn-warning" style="color: #fff !important;" href="javascript:setTarikh()">اعمال فیلتر</a>
+							<a class="btn btn-danger" style="color: #fff !important;" href="javascript:clearTarikh()">حذف فیلتر</a>
+						</li>
+						
             <!-- Breadcrumb Menu-->
             <li class="breadcrumb-menu">
                 <!--<div class="btn-group" role="group" aria-label="Button group with nested dropdown">-->
@@ -417,3 +470,5 @@ $_SESSION['csv_ready'] = $csv_ready;
         </form>
       </div>
     </div>
+<form id="tarikh-form" method="post">
+</form>

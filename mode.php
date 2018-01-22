@@ -5,6 +5,7 @@ if(!isset($_SESSION['user_id'])){
   die();
 }
 include('class/report.php');
+include('class/db.php');
 $tgoals = array(
   1=>'کارشخصی',
   2=>'شغلی',
@@ -15,12 +16,8 @@ $tgoals = array(
   7=>'غیره',
 );
 $tbl = '';
-$dbok = TRUE;
-$my = new mysqli('localhost','mirsamie_track','Track@159951','mirsamie_track');
-if($my->connect_errno){
-  $dbok = FALSE;
-  $tbl = 'خطای بانک اطلاعاتی';
-}else{
+
+if($dbok){
   $rp = new report;
   $tbl = '<table class="jadval" cellspacing="0" width="99%">';
   $tbl .= '<tr>';
@@ -109,6 +106,7 @@ if($my->connect_errno){
   </head>
   <body>
     <div id="chartContainer" style="width: 100%; height: 400px"></div>
+    <div id="chartContainer1" style="width: 100%; height: 400px"></div>
     <div style="direction:rtl">
     <?php echo $tbl; ?>
     </div>
@@ -139,6 +137,46 @@ if($my->connect_errno){
             { label: "خودرو",       y: 3.8,  legendText: "خودرو"}, 
             { label: "اتوبوس",   y: 3.2,  legendText: "اتوبوس" }, 
             { label: "مترو",   y: 39.6, legendText: "مترو" } 
+          ] 
+          /*
+          dataPoints: [ 
+            { label: "پیاده",  y: <?php echo $tmp[1]; ?>, legendText: "پیاده"}, 
+            { label: "دوچرخه",    y: <?php echo $tmp[2]; ?>, legendText: "دوچرخه"  }, 
+            { label: "موتورسیکلت",   y: <?php echo $tmp[7]; ?>,  legendText: "موتورسیکلت" }, 
+            { label: "خودرو",       y: <?php echo $tmp[3]; ?>,  legendText: "خودرو"}, 
+            { label: "اتوبوس",   y: <?php echo $tmp[4]; ?>,  legendText: "اتوبوس" }, 
+            { label: "مترو",   y: <?php echo $tmp[5]; ?>, legendText: "مترو" } 
+          ] 
+          */
+        } 
+        ] 
+      }); 
+      $("#chartContainer1").CanvasJSChart({ 
+        title: { 
+          text: "توزیع هدف سفر",
+          fontSize: 24
+        }, 
+        axisY: { 
+          title: "مسافت به %" 
+        }, 
+        legend :{ 
+          verticalAlign: "center", 
+          horizontalAlign: "right" 
+        }, 
+        data: [ 
+        { 
+          type: "pie", 
+          showInLegend: true, 
+          toolTipContent: "{label} <br/> {y} %", 
+          indexLabel: "{y} %", 
+          dataPoints: [ 
+            { label: "کارشخصی",  y: 30.3, legendText: "کارشخصی"}, 
+            { label: "شغلی",    y: 19.1, legendText: "شغلی"  }, 
+            { label: "خرید",   y: 4.0,  legendText: "خرید" }, 
+            { label: "تحصیلی",       y: 3.8,  legendText: "تحصیلی"}, 
+            { label: "زیارت و مذهبی",   y: 3.2,  legendText: "زیارت و مذهبی" }, 
+            { label: "تفریح",   y: 19.6, legendText: "تفریح" },
+            { label: "غیره",   y: 20, legendText: "غیره" } 
           ] 
           /*
           dataPoints: [ 
